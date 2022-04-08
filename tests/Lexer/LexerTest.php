@@ -19,4 +19,15 @@ final class LexerTest extends TestCase
         $expected = "{";
         $this->assertEquals($expected, $actual);
     }
+
+    /**
+     * @test
+     */
+    public function getNextToken_次の文字を1文字取得()
+    {
+        $lexer = new Lexer('{ "foo": "bar" }');
+        $actual = $lexer->getNextToken();
+        $expected = " ";
+        $this->assertEquals($expected, $actual);
+    }
 }
