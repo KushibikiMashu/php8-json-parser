@@ -10,8 +10,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "panda\\ToyJsonParser\\": "src/",
-            "panda\\ToyJsonParserTest\\": "tests/"
+            "Panda\\ToyJsonParser\\": "src/",
+            "Panda\\ToyJsonParser\\Test\\": "tests/"
         }
     },
     "authors": [
