@@ -72,6 +72,11 @@ final class Lexer
         return $ch;
     }
 
+    private function isSkipCharacter(?string $ch): bool
+    {
+        return $ch === ' ' || $ch === "\t" || $ch === "\n" || $ch === "\r";
+    }
+
     private function getStringToken(): StringToken
     {
         $str = '';
