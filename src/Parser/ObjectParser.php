@@ -27,6 +27,7 @@ final class ObjectParser
 
         while (true) {
             $token = $lexer->getNextToken();
+
             if ($token instanceof EofToken) {
                 break;
             }
