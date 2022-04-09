@@ -37,9 +37,9 @@ final class LexerTest extends TestCase
      * @test
      * @dataProvider dataProvider
      */
-    public function getNextToken($given, $expected)
+    public function getNextToken($input, $expected)
     {
-        $lexer = new Lexer($given);
+        $lexer = new Lexer($input);
         $actual = $lexer->getNextToken();
         $this->assertInstanceOf($expected, $actual);
     }
