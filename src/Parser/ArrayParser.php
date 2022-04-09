@@ -28,14 +28,14 @@ final class ArrayParser
 
             switch ($state) {
                 case self::STATE_START:
-                    if ($token instanceof RightSquareBracketToken){
+                    if ($token instanceof RightSquareBracketToken) {
                         return $array;
                     }
                     $array[] = ValueParser::parse($lexer, $token);
                     $state = self::STATE_VALUE;
                     break;
                 case self::STATE_VALUE:
-                    if ($token instanceof RightSquareBracketToken){
+                    if ($token instanceof RightSquareBracketToken) {
                         return $array;
                     }
                     if ($token instanceof CommaToken) {
