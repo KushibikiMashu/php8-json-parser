@@ -106,7 +106,7 @@ final class Lexer
             };
         }
 
-        throw new LexerException('No end of string')
+        throw new LexerException('No end of string');
     }
 
     private function getNumberToken(string $ch): NumberToken
