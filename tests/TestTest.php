@@ -8,6 +8,13 @@ use Panda\ToyJsonParser\Test;
 
 final class TestTest extends \PHPUnit\Framework\TestCase
 {
+    private Test $test;
+
+    protected function setUp(): void
+    {
+        $this->test = new Test();
+    }
+
     /**
      * @test
      */
@@ -15,7 +22,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
     {
         // ValueParserTest のテスト数は5
         $classes = ['Panda\ToyJsonParser\Test\Parser\ValueParserTest'];
-        $actual = (new Test())->runTests($classes);
+        $actual = $this->test->runTests($classes);
         $this->assertMatchesRegularExpression('/5 tests/', $actual);
     }
 
@@ -29,7 +36,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
             'Panda\ToyJsonParser\Test\Parser\ArrayParserTest',
         ];
 
-        $actual = (new Test())->runTests($classes);
+        $actual = $this->test->runTests($classes);
         $this->assertMatchesRegularExpression('/6 tests/', $actual);
     }
 
@@ -38,7 +45,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
      */
     public function 最後のコミットのファイル名を取得する()
     {
-        $actual = (new Test())->getChangedFilesFromCommitHashes('e5779a5');
+        $actual = $this->test->getChangedFilesFromCommitHashes('e5779a5');
         $this->assertSame([
             'src/Parser/ObjectParser.php',
             'tests/Parser/ArrayParserTest.php',
@@ -51,7 +58,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
      */
     public function 実装ファイル名を渡したら、そのテストのファイル名を取得する()
     {
-        $actual = (new Test())->findTestFileByProdFilePath('src/Parser/ObjectParser.php');
+        $actual = $this->test->findTestFileByProdFilePath('src/Parser/ObjectParser.php');
         $this->assertSame('tests/Parser/ObjectParserTest.php', $actual);
     }
 
@@ -60,7 +67,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
      */
     public function テストファイル名を渡したら、そのテストのnamespaceを取得する()
     {
-        $actual = (new Test())->findTestAbsoluteClassName([
+        $actual = $this->test->findTestAbsoluteClassName([
             "src/" => "Panda\ToyJsonParser\\",
             "tests/" => "Panda\ToyJsonParser\Test\\",
         ], 'tests/Parser/ObjectParserTest.php');
@@ -72,8 +79,8 @@ final class TestTest extends \PHPUnit\Framework\TestCase
      */
     public function 変更の中にテストクラスがある場合は、それだけを実行する()
     {
-        $actual = (new Test())->main();
-        $this->assertMatchesRegularExpression('/2 tests/', $actual);
+        $actual = $this->test->main();
+        $this->assertMatchesRegularExpression('/No test executed/', $actual);
     }
 
     /**
@@ -81,7 +88,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
      */
     public function mainブランチとの差分のコミットハッシュを全て取得する()
     {
-        $actual = (new Test())->diffHashesFromTargetBranch('unit-test', 'main', 'd3fb679');
+        $actual = $this->test->diffHashesFromTargetBranch('unit-test', 'main', 'd3fb679');
         $this->assertSame(['d3fb679', '5c9396c'], $actual);
     }
 
@@ -90,8 +97,26 @@ final class TestTest extends \PHPUnit\Framework\TestCase
      */
     public function 複数コミットから複数ファイルを取得する()
     {
-        $actual = (new Test())->getAllChangedFiles('unit-test', 'main', 'd3fb679');
+        $actual = $this->test->getAllChangedFiles('unit-test', 'main', 'd3fb679');
 
         $this->assertSame(['src/Test.php', 'src/TestTest.php'], $actual);
     }
 }
+
+//......array(3) {
+//    [0]=>
+//  string(27) "src/Parser/ObjectParser.php"
+//    [1]=>
+//  string(32) "tests/Parser/ArrayParserTest.php"
+//    [2]=>
+//  string(33) "tests/Parser/ObjectParserTest.php"
+//}
+
+//.....Farray(3) {
+//[0]=>
+//  string(18) "tests/TestTest.php"
+//[1]=>
+//  string(12) "src/Test.php"
+//[2]=>
+//  string(16) "src/TestTest.php"
+//}

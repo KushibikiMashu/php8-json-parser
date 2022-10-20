@@ -19,14 +19,24 @@ final class Test
 
         $classMap = [];
         $config = $this->getNamespaceMap();
-
         foreach ($files as $file) {
+            $existsFile = file_exists(__DIR__ . '/../' . $file);
+            if (!$existsFile) {
+                continue;
+            }
+
+            // このクラスのテストを実行すると再帰的に実行されてしまうので、スキップする
+            if ($file === 'tests/TestTest.php' || $file === 'src/Test.php') {
+                continue;
+            }
+
             if (str_starts_with($file, 'tests')) {
                 $className = $this->findTestAbsoluteClassName($config, $file);
             } else {
                 $testFile = $this->findTestFileByProdFilePath($file);
                 $className = $this->findTestAbsoluteClassName($config, $testFile);
             }
+
 
             $classMap[$className] = 1;
         }
@@ -55,6 +65,10 @@ final class Test
 
     public function runTests(array $classes): string
     {
+        if (count($classes) === 0) {
+            return 'No test executed.';
+        }
+
         $className = $this->join($classes);
         $className = $this->format($className);
 
