@@ -16,6 +16,12 @@ use Panda\ToyJsonParser\Lexer\Token\TrueToken;
 
 final class ValueParser
 {
+    /**
+     * @param Lexer $lexer
+     * @param TokenInterface $token
+     * @return array|string|int|bool|null
+     * @throws ParserException
+     */
     public static function parse(Lexer $lexer, TokenInterface $token): array|string|int|bool|null {
         return match(true) {
             $token instanceof TrueToken => true,
