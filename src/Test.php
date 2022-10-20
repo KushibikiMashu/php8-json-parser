@@ -8,10 +8,10 @@ use Error;
 
 final class Test
 {
-    public function main(): string
+    public function main(string $toHash = null): string
     {
         $currentBranch = $this->getCurrentBranchName();
-        $files = $this->getAllChangedFiles($currentBranch);
+        $files = $this->getAllChangedFiles($currentBranch, 'main', $toHash);
 
         if (!$this->existsPhpFile($files)) {
             return 'No tests.';
