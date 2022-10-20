@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Panda\ToyJsonParser\Parser;
 
+use Panda\ToyJsonParser\Lexer\Exception\LexerException as LexerExceptionAlias;
 use Panda\ToyJsonParser\Lexer\Lexer;
 use Panda\ToyJsonParser\Lexer\Token\ColonToken;
 use Panda\ToyJsonParser\Lexer\Token\CommaToken;
@@ -19,6 +20,12 @@ final class ObjectParser
     const STATE_VALUE = 'value';
     const STATE_COMMA = 'comma';
 
+    /**
+     * @param Lexer $lexer
+     * @return array
+     * @throws ParserException
+     * @throws LexerExceptionAlias
+     */
     public static function parse(Lexer $lexer): array
     {
         $array = [];

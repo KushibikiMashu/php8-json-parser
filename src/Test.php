@@ -37,6 +37,7 @@ final class Test
                 $className = $this->findTestAbsoluteClassName($config, $testFile);
             }
 
+            echo "executed: " . $className . PHP_EOL;
 
             $classMap[$className] = 1;
         }
@@ -159,8 +160,11 @@ final class Test
     }
 }
 
+echo (new Test())->main();
+
 // クラス候補
 // GitManager
+// PHPUnitManager
 // Commit
 // Branch
 // File
@@ -168,3 +172,4 @@ final class Test
 // ClassMap
 // TestRunner
 // Config（ターゲットのブランチ名、コミットハッシュ、）
+// Display
