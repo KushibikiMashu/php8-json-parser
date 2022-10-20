@@ -79,7 +79,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
      */
     public function mainブランチとの差分のコミットハッシュを全て取得する()
     {
-        $actual = (new Test())->diffHashesFromTargetBranch('unit-test', 'main', '5c9396c');
-        $this->assertSame(['5c9396c'], $actual);
+        $actual = (new Test())->diffHashesFromTargetBranch('unit-test', 'main', 'd3fb679');
+        $this->assertSame(['d3fb679', '5c9396c'], $actual);
     }
 }

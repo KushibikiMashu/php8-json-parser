@@ -114,7 +114,7 @@ final class Test
             $hashes[] = explode(' ', $line)[0];
         }
 
-        return array_reverse($hashes);
+        return $hashes;
     }
 
     public function getBranchName(string $current = null): string
