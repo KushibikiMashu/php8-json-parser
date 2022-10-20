@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Panda\ToyJsonParser;
+namespace Panda\ToyJsonParser\Test;
+
+use Panda\ToyJsonParser\Test;
 
 final class TestTest extends \PHPUnit\Framework\TestCase
 {
