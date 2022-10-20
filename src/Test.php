@@ -10,8 +10,8 @@ final class Test
 {
     public function main(): string
     {
-        $branch = $this->getBranchName();
-        $files = $this->getChangedFilesFromCommitHashes('e5779a5');
+        $currentBranch = $this->getCurrentBranchName();
+        $files = $this->getAllChangedFiles($currentBranch);
 
         if (!$this->existsPhpFile($files)) {
             return 'No tests.';
@@ -117,7 +117,7 @@ final class Test
         return $hashes;
     }
 
-    public function getBranchName(string $current = null): string
+    public function getCurrentBranchName(string $current = null): string
     {
         if ($current) {
             return $current;
@@ -127,4 +127,30 @@ final class Test
         $line = $output[0];
         return str_replace('* ', '', $line);
     }
+
+    public function getAllChangedFiles(string $target, string $source = 'main', string $to = null): array
+    {
+        $end = $to ?? $target;
+        exec("git log --no-merges --name-only --oneline $source..$end", $output);
+        $files = [];
+
+        foreach ($output as $line) {
+            if (!str_contains($line, '.php')) {
+                continue;
+            }
+            $files[$line] = 1;
+        }
+
+        return array_keys($files);
+    }
 }
+
+// クラス候補
+// GitManager
+// Commit
+// Branch
+// File
+// TestFile
+// ClassMap
+// TestRunner
+// Config（ターゲットのブランチ名、コミットハッシュ、）

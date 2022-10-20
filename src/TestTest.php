@@ -82,4 +82,14 @@ final class TestTest extends \PHPUnit\Framework\TestCase
         $actual = (new Test())->diffHashesFromTargetBranch('unit-test', 'main', 'd3fb679');
         $this->assertSame(['d3fb679', '5c9396c'], $actual);
     }
+
+    /**
+     * @test
+     */
+    public function 複数コミットから複数ファイルを取得する()
+    {
+        $actual = (new Test())->getAllChangedFiles('unit-test', 'main', 'd3fb679');
+
+        $this->assertSame(['src/Test.php', 'src/TestTest.php'], $actual);
+    }
 }
