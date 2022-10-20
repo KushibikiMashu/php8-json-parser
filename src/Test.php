@@ -10,7 +10,8 @@ final class Test
 {
     public function main(): string
     {
-        $files = $this->getChangedFilesAtLastCommit();
+        $branch = $this->getBranchName();
+        $files = $this->getChangedFilesFromCommitHashes('e5779a5');
 
         if (!$this->existsPhpFile($files)) {
             return 'No tests.';
@@ -72,9 +73,10 @@ final class Test
         return str_replace('\\', '\\\\', $className);
     }
 
-    public function getChangedFilesAtLastCommit(): array
+    public function getChangedFilesFromCommitHashes(string $from, ?string $to = null): array
     {
-        exec('git log --name-only --oneline e5779a5^..e5779a5', $output);
+        $hashes = $to ? "$from^..$to" : "$from^..$from";
+        exec("git log --name-only --oneline $hashes", $output);
 
         return array_slice($output, 1);
     }
@@ -100,5 +102,29 @@ final class Test
         $replaced = str_replace($testDir, $map[$testDir], $withoutExtension);
 
         return str_replace('/', '\\', $replaced);
+    }
+
+    public function diffHashesFromTargetBranch(string $target, string $source = 'main', string $to = null): array
+    {
+        $end = $to ?? $target;
+        exec("git log --no-merges --oneline $source..$end", $output);
+        $hashes = [];
+
+        foreach ($output as $line) {
+            $hashes[] = explode(' ', $line)[0];
+        }
+
+        return array_reverse($hashes);
+    }
+
+    public function getBranchName(string $current = null): string
+    {
+        if ($current) {
+            return $current;
+        }
+
+        exec('git branch --contains', $output);
+        $line = $output[0];
+        return str_replace('* ', '', $line);
     }
 }

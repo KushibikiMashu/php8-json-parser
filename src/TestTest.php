@@ -36,7 +36,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
      */
     public function 最後のコミットのファイル名を取得する()
     {
-        $actual = (new Test())->getChangedFilesAtLastCommit();
+        $actual = (new Test())->getChangedFilesFromCommitHashes('e5779a5');
         $this->assertSame([
             'src/Parser/ObjectParser.php',
             'tests/Parser/ArrayParserTest.php',
@@ -72,5 +72,14 @@ final class TestTest extends \PHPUnit\Framework\TestCase
     {
         $actual = (new Test())->main();
         $this->assertMatchesRegularExpression('/2 tests/', $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function mainブランチとの差分のコミットハッシュを全て取得する()
+    {
+        $actual = (new Test())->diffHashesFromTargetBranch('unit-test', 'main', '5c9396c');
+        $this->assertSame(['5c9396c'], $actual);
     }
 }
