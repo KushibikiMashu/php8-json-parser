@@ -6,12 +6,13 @@ namespace Panda\ToyJsonParser\Test;
 
 final class GitManager
 {
-    public function getCurrentBranch(): string
+    public function getCurrentBranch(): Branch
     {
         exec('git branch --contains', $output);
         $line = $output[0];
         // "* branch-name"の形式で値が返ってくるので、ブランチ名だけを取り出している
-        return str_replace('* ', '', $line);
+        $name = str_replace('* ', '', $line);
+        return new Branch($name);
     }
 
     public function getAllChangedFiles(string $target, string $source = 'main', string $to = null): array

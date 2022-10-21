@@ -22,7 +22,7 @@ final class Test
     public function main(string $toHash = null): string
     {
         $currentBranch = $this->git->getCurrentBranch();
-        $files = $this->git->getAllChangedFiles($currentBranch, 'main', $toHash);
+        $files = $this->git->getAllChangedFiles($currentBranch->getName(), 'main', $toHash);
         $phpFiles = $this->filterPhpFile($files);
         if (count($phpFiles) === 0) {
             return 'No tests.';
