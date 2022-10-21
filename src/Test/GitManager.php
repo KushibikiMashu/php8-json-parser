@@ -18,10 +18,12 @@ final class GitManager
     {
         $end = $to ?? $target;
         exec("git log --no-merges --name-only --oneline $source..$end", $output);
-        $files = [];
 
+        $files = [];
         foreach ($output as $line) {
-            if (!str_contains($line, '.php')) {
+            // コミットの行をスキップする。コミットの識別の仕方が面倒なので、スペースの有無で判断する
+            // ファイル名にはスペースがないため
+            if (str_contains($line, ' ')) {
                 continue;
             }
             $files[$line] = 1;
@@ -30,6 +32,3 @@ final class GitManager
         return array_keys($files);
     }
 }
-
-//exec('git branch --contains', $output);
-//exec("git log --no-merges --name-only --oneline $source..$end", $output);

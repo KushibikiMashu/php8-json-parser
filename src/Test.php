@@ -23,14 +23,14 @@ final class Test
     {
         $currentBranch = $this->git->getCurrentBranch();
         $files = $this->git->getAllChangedFiles($currentBranch, 'main', $toHash);
-
-        if (!$this->existsPhpFile($files)) {
+        $phpFiles = $this->filterPhpFile($files);
+        if (count($phpFiles) === 0) {
             return 'No tests.';
         }
 
         $classMap = [];
         $config = $this->getNamespaceMap();
-        foreach ($files as $file) {
+        foreach ($phpFiles as $file) {
             $existsFile = file_exists(__DIR__ . '/../' . $file);
             if (!$existsFile) {
                 continue;
@@ -56,15 +56,16 @@ final class Test
         return $this->phpUnit->run(array_keys($classMap));
     }
 
-    private function existsPhpFile(array $files): bool
+    private function filterPhpFile(array $files): array
     {
+        $phpFiles = [];
         foreach ($files as $file) {
             if (str_contains($file, '.php')) {
-                return true;
+                $phpFiles[] = $file;
             }
         }
 
-        return false;
+        return $phpFiles;
     }
 
     private function getNamespaceMap(): array
@@ -105,6 +106,7 @@ final class Test
 // Commit
 // Branch
 // File
+// Finder
 // TestFile
 // ClassMap
 // TestRunner
