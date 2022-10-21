@@ -5,13 +5,24 @@ declare(strict_types=1);
 namespace Panda\ToyJsonParser;
 
 use Error;
+use Panda\ToyJsonParser\Test\GitManager;
+use Panda\ToyJsonParser\Test\PHPUnitManager;
 
 final class Test
 {
+    private GitManager $git;
+    private PHPUnitManager $phpUnit;
+
+    public function __construct()
+    {
+        $this->git = new GitManager();
+        $this->phpUnit = new PHPUnitManager();
+    }
+
     public function main(string $toHash = null): string
     {
-        $currentBranch = $this->getCurrentBranchName();
-        $files = $this->getAllChangedFiles($currentBranch, 'main', $toHash);
+        $currentBranch = $this->git->getCurrentBranch();
+        $files = $this->git->getAllChangedFiles($currentBranch, 'main', $toHash);
 
         if (!$this->existsPhpFile($files)) {
             return 'No tests.';
@@ -37,12 +48,12 @@ final class Test
                 $className = $this->findTestAbsoluteClassName($config, $testFile);
             }
 
-            echo "executed: " . $className . PHP_EOL;
+//            echo "executed: " . $className . PHP_EOL;
 
             $classMap[$className] = 1;
         }
 
-        return $this->runTests(array_keys($classMap));
+        return $this->phpUnit->run(array_keys($classMap));
     }
 
     private function existsPhpFile(array $files): bool
@@ -62,30 +73,6 @@ final class Test
         $config = json_decode($json, true);
 
         return array_flip($config['autoload']['psr-4']);
-    }
-
-    public function runTests(array $classes): string
-    {
-        if (count($classes) === 0) {
-            return 'No test executed.';
-        }
-
-        $className = $this->join($classes);
-        $className = $this->format($className);
-
-        exec("./Vendor/phpunit/phpunit/phpunit tests --filter '($className)'", $output);
-
-        return implode(PHP_EOL, $output);
-    }
-
-    private function join(array $classes): string
-    {
-        return implode('|', $classes);
-    }
-
-    private function format(string $className): string
-    {
-        return str_replace('\\', '\\\\', $className);
     }
 
     public function findTestFileByProdFilePath(string $filepath): string
@@ -110,44 +97,11 @@ final class Test
 
         return str_replace('/', '\\', $replaced);
     }
-
-    public function getCurrentBranchName(string $current = null): string
-    {
-        if ($current) {
-            return $current;
-        }
-
-        exec('git branch --contains', $output);
-        $line = $output[0];
-        return str_replace('* ', '', $line);
-    }
-
-    public function getAllChangedFiles(string $target, string $source = 'main', string $to = null): array
-    {
-        $end = $to ?? $target;
-        exec("git log --no-merges --name-only --oneline $source..$end", $output);
-        $files = [];
-
-        foreach ($output as $line) {
-            if (!str_contains($line, '.php')) {
-                continue;
-            }
-            $files[$line] = 1;
-        }
-
-        return array_keys($files);
-    }
 }
 
-class GitManager {
-//
-}
-
-echo (new Test())->main();
+//echo (new Test())->main();
 
 // クラス候補
-// GitManager
-// PHPUnitManager
 // Commit
 // Branch
 // File
