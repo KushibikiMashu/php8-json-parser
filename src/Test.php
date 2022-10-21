@@ -88,14 +88,6 @@ final class Test
         return str_replace('\\', '\\\\', $className);
     }
 
-    public function getChangedFilesFromCommitHashes(string $from, ?string $to = null): array
-    {
-        $hashes = $to ? "$from^..$to" : "$from^..$from";
-        exec("git log --name-only --oneline $hashes", $output);
-
-        return array_slice($output, 1);
-    }
-
     public function findTestFileByProdFilePath(string $filepath): string
     {
         $exploded = explode('/', $filepath);
@@ -117,19 +109,6 @@ final class Test
         $replaced = str_replace($testDir, $map[$testDir], $withoutExtension);
 
         return str_replace('/', '\\', $replaced);
-    }
-
-    public function diffHashesFromTargetBranch(string $target, string $source = 'main', string $to = null): array
-    {
-        $end = $to ?? $target;
-        exec("git log --no-merges --oneline $source..$end", $output);
-        $hashes = [];
-
-        foreach ($output as $line) {
-            $hashes[] = explode(' ', $line)[0];
-        }
-
-        return $hashes;
     }
 
     public function getCurrentBranchName(string $current = null): string
@@ -158,6 +137,10 @@ final class Test
 
         return array_keys($files);
     }
+}
+
+class GitManager {
+//
 }
 
 echo (new Test())->main();
