@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Panda\ToyJsonParser\Test\Test;
 
+use Panda\ToyJsonParser\Test\ClassFile;
 use Panda\ToyJsonParser\Test\GitManager;
+use Panda\ToyJsonParser\Test\TestClassFile;
 
 final class GitManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -22,6 +24,9 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
     {
         $actual = $this->git->getAllChangedFiles('unit-test', 'main', 'd3fb679');
 
-        $this->assertSame(['src/Test.php', 'src/TestTest.php'], $actual);
+        $this->assertEquals([
+            new ClassFile('src/Test.php'),
+            new TestClassFile('src/TestTest.php'),
+        ], $actual);
     }
 }

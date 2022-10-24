@@ -15,6 +15,9 @@ final class GitManager
         return new Branch($name);
     }
 
+    /**
+     * @return FileInterface[]
+     */
     public function getAllChangedFiles(string $target, string $source = 'main', string $to = null): array
     {
         $end = $to ?? $target;
@@ -30,6 +33,8 @@ final class GitManager
             $files[$line] = 1;
         }
 
-        return array_keys($files);
+        return array_map(function ($filename) {
+            return (new FileFactory())->create($filename);
+        }, array_keys($files));
     }
 }
