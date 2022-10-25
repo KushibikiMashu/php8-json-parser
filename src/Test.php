@@ -7,6 +7,7 @@ namespace Panda\ToyJsonParser;
 use Panda\ToyJsonParser\Test\Branch;
 use Panda\ToyJsonParser\Test\ClassFile;
 use Panda\ToyJsonParser\Test\ClassNameResolver;
+use Panda\ToyJsonParser\Test\FileFactory;
 use Panda\ToyJsonParser\Test\Finder;
 use Panda\ToyJsonParser\Test\GitManager;
 use Panda\ToyJsonParser\Test\PHPUnitManager;
@@ -30,7 +31,8 @@ final class Test
         $resolver = new ClassNameResolver();
 
         $currentBranch = $this->git->getCurrentBranch();
-        $files = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
+        $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
+        $files = array_map(fn ($filename) => (new FileFactory())->create($filename), $filenames);
 
         $classMap = [];
         foreach ($files as $file) {

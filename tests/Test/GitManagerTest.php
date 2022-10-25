@@ -24,10 +24,7 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
     {
         $actual = $this->git->getAllChangedFiles('unit-test', 'main', 'd3fb679');
 
-        $this->assertEquals([
-            new ClassFile('src/Test.php'),
-            new TestClassFile('src/TestTest.php'),
-        ], $actual);
+        $this->assertEquals(['src/Test.php', 'src/TestTest.php'], $actual);
     }
 
     /**

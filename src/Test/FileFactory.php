@@ -6,6 +6,7 @@ namespace Panda\ToyJsonParser\Test;
 
 final class FileFactory
 {
+    // OtherFile、ClassFile、 TestClassFile の3種類のいずれかを作る
     public function create(string $filename): FileInterface
     {
         $extension = pathinfo($filename)['extension'];

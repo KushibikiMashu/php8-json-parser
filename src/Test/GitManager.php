@@ -16,7 +16,7 @@ final class GitManager
     }
 
     /**
-     * @return FileInterface[]
+     * @return string[]
      */
     public function getAllChangedFiles(string $target, string $source = 'main', string $to = null): array
     {
@@ -34,11 +34,7 @@ final class GitManager
             $files[$line] = 1;
         }
 
-        // TODO: File 化するのは Finder の責務とする
-        // Finder に切り出す or FileFactory を Test.php で呼び出す
-        return array_map(function ($filename) {
-            return (new FileFactory())->create($filename);
-        }, array_keys($files));
+        return array_keys($files);
     }
 
     /**
