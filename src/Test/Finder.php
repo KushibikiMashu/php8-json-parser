@@ -6,11 +6,20 @@ namespace Panda\ToyJsonParser\Test;
 
 final class Finder
 {
-    private string $rootDir = __DIR__  . '/../../';
+    // TODO: 設定ファイルから root ディレクトリを取得するようにする
+    private string $rootDir = __DIR__ . '/../../';
+
+    private GitManager $git;
+    private FileFactory $factory;
+
+    public function __construct()
+    {
+        $this->git = new GitManager();
+        $this->factory = new FileFactory();
+    }
 
     public function exists(FileInterface $file): bool
     {
-        // project の root dir にまで戻る必要がある
         return file_exists($this->rootDir . $file->getFilename());
     }
 
@@ -20,5 +29,18 @@ final class Finder
         $replaced = str_replace($exploded[0], 'tests', $file->getFilename());
         $filename = str_replace('.php', 'Test.php', $replaced);
         return new TestClassFile($filename);
+    }
+
+    /**
+     * @param ClassFile|TestClassFile $file
+     * @return FileInterface[]
+     */
+    // FIXME: PHP8 なら ClassFile|TestClassFile で引数の型をつけられる
+    public function findUsingClasses($file): array
+    {
+        $className = pathinfo($file->getFilename())['filename'];
+        $filenames = $this->git->grepUsingFilenames($className);
+
+        return array_map(fn ($filename) => $this->factory->create($filename), $filenames);
     }
 }

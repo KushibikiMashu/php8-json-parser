@@ -27,14 +27,27 @@ final class GitManager
         foreach ($output as $line) {
             // コミットの行をスキップする。コミットの識別の仕方が面倒なので、スペースの有無で判断する
             // ファイル名にはスペースがないため
-            if (str_contains($line, ' ')) {
+            // PHP8 なら str_contains が使える
+            if (strpos($line, ' ') !== false) {
                 continue;
             }
             $files[$line] = 1;
         }
 
+        // TODO: File 化するのは Finder の責務とする
+        // Finder に切り出す or FileFactory を Test.php で呼び出す
         return array_map(function ($filename) {
             return (new FileFactory())->create($filename);
         }, array_keys($files));
+    }
+
+    /**
+     * @return string[]
+     */
+    public function grepUsingFilenames(string $className): array
+    {
+        exec("git grep -l -e 'use' --and -w -e '$className'", $output);
+
+        return $output;
     }
 }

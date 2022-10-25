@@ -11,7 +11,9 @@ trait ClassFileTrait
 
     public function isPhpFile(): bool
     {
-        return str_contains($this->filename, '.php');
+        // PHP8 なら str_ends_with が使える
+        // https://www.php.net/manual/ja/function.str-ends-with.php
+        return substr($this->filename, -4) === '.php';
     }
 
     public function excludeExtension(): string

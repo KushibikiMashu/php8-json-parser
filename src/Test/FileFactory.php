@@ -8,7 +8,8 @@ final class FileFactory
 {
     public function create(string $filename): FileInterface
     {
-        if (!str_contains($filename, '.php')) {
+        $extension = pathinfo($filename)['extension'];
+        if ($extension !== 'php') {
             return new OtherFile($filename);
         }
 

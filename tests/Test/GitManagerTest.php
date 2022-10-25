@@ -29,4 +29,13 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
             new TestClassFile('src/TestTest.php'),
         ], $actual);
     }
+
+    /**
+     * @test
+     */
+    public function 実装ファイル名を渡すと、そのクラスが使われているファイル名を配列で返す()
+    {
+        $actual = $this->git->grepUsingFilenames('ClassNameResolver');
+        $this->assertEquals(['src/Test.php', 'tests/Test/ClassNameResolverTest.php'], $actual);
+    }
 }
