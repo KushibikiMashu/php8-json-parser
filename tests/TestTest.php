@@ -46,7 +46,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
     public function PHPファイルが変更されていない場合、空配列を返す()
     {
         $files = [new OtherFile('composer.json')];
-        $actual = $this->test->createClassMap($files);
+        $actual = $this->test->createClassList($files);
         $this->assertSame([], $actual);
     }
 }

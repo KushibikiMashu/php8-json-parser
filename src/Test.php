@@ -33,27 +33,27 @@ final class Test
         $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
         $files = array_map(fn ($filename) => (new FileFactory())->create($filename), $filenames);
 
-        $classMap = $this->createClassMap($files);
+        $classList = $this->createClassList($files);
 
-        if (count($classMap) === 0) {
+        if (count($classList) === 0) {
             return 'No tests.';
         }
 
-        return $this->phpUnit->run($classMap);
+        return $this->phpUnit->run($classList);
     }
 
     /**
      * @param FileInterface[] $files
      * @return string[]
      */
-    // TODO: ClassMap か、他の名前のクラスに処理を切り出す
-    public function createClassMap(array $files): array
+    // TODO: ClassList か、他の名前のクラスに処理を切り出す
+    public function createClassList(array $files): array
     {
         // constructor に入れる
         $finder = new Finder();
         $resolver = new ClassNameResolver();
 
-        $classMap = [];
+        $classList = [];
         foreach ($files as $file) {
             if (!$finder->exists($file) || !$file->isPhpFile()) {
                 continue;
@@ -76,10 +76,10 @@ final class Test
 
 //            echo "executed: " . $className . PHP_EOL;
 
-            $classMap[$className] = 1;
+            $classList[$className] = 1;
         }
 
-        return array_keys($classMap);
+        return array_keys($classList);
     }
 }
 
