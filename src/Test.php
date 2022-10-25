@@ -52,8 +52,11 @@ final class Test
         // constructor に入れる
         $finder = new Finder();
         $resolver = new ClassNameResolver();
+        $git = new GitManager();
+        $factory = new FileFactory();
 
         $classList = [];
+        $filenameList = [];
         foreach ($files as $file) {
             if (!$finder->exists($file) || !$file->isPhpFile()) {
                 continue;
@@ -67,19 +70,22 @@ final class Test
 
             // TODO: 呼び出しているファイルを探して無限ループにならないように、
             // 一度調べたファイルは loop をスキップする
+            $filenameList[$filename] = 1;
 
             if ($file->isTestFile()) {
-                /* @var TestClassFile $file  */
-                $className = $resolver->findTestAbsoluteClassName($file);
+                /* @var TestClassFile $file */
+                $absoluteClassName = $resolver->resolveAbsoluteClassName($file);
             } else {
-                /* @var ClassFile $file  */
-                $testFile = $finder->findTestFileByProdFilePath($file);
-                $className = $resolver->findTestAbsoluteClassName($testFile);
+                // TODO: 実装クラスを使っているクラスを探し出す
+
+                /* @var ClassFile $file */
+                $testFile = $finder->findTestFileByClassFile($file);
+                $absoluteClassName = $resolver->resolveAbsoluteClassName($testFile);
             }
 
-//            echo "executed: " . $className . PHP_EOL;
+//            echo "executed: " . $absoluteClassName . PHP_EOL;
 
-            $classList[$className] = 1;
+            $classList[$absoluteClassName] = 1;
         }
 
         return array_keys($classList);

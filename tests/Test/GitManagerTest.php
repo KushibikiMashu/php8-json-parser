@@ -28,11 +28,10 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function 実装ファイル名を渡すと、そのクラスが使われているファイル名を配列で返す()
+    public function 絶対クラス名を渡すと、そのクラスが使われているファイル名を配列で返す()
     {
-        $actual = $this->git->grepUsingFilenames('Panda\ToyJsonParser\Parser\ValueParser');
-
-        // TODO: テストのこの上の行に引っかかるので $actual から除外する
+        $actual = $this->git->grepDependedClassFilenames('Panda\ToyJsonParser\Parser\ValueParser');
+        // FIXME: テストのこの上の行に引っかかるので $actual から除外する
         $actual = array_filter($actual, fn ($filename) => $filename !== 'tests/Test/GitManagerTest.php');
 
         $this->assertEquals([

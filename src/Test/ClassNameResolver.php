@@ -23,15 +23,18 @@ final class ClassNameResolver
         return array_flip($config['autoload']['psr-4']);
     }
 
-    public function findTestAbsoluteClassName(TestClassFile $file): string
+    /**
+     * @param ClassFile|TestClassFile $file
+     */
+    public function resolveAbsoluteClassName($file): string
     {
         // phpunit.xml から取得する方がいいかも？
-        $testDir = $file->rootDir();
-        if (!isset($this->classMap[$testDir])) {
+        $rootDir = $file->rootDir();
+        if (!isset($this->classMap[$rootDir])) {
             throw new Error();
         }
         $replaced = str_replace('/', '\\', $file->filenameWithoutRootDir());
 
-        return $this->classMap[$testDir] . $replaced;
+        return $this->classMap[$rootDir] . $replaced;
     }
 }

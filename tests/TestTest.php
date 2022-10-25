@@ -33,7 +33,7 @@ final class TestTest extends \PHPUnit\Framework\TestCase
             new ClassFile('src/Parser/ValueParser.php'),
             new TestClassFile('tests/Parser/ObjectParserTest.php'),
         ];
-        $actual = $this->test->createClassMap($files);
+        $actual = $this->test->createClassList($files);
         $this->assertSame([
             'Panda\ToyJsonParser\Test\Parser\ValueParserTest',
             'Panda\ToyJsonParser\Test\Parser\ObjectParserTest',
@@ -48,5 +48,4 @@ final class TestTest extends \PHPUnit\Framework\TestCase
         $files = [new OtherFile('composer.json')];
         $actual = $this->test->createClassList($files);
         $this->assertSame([], $actual);
-    }
-}
+    }}

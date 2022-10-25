@@ -38,9 +38,11 @@ final class GitManager
     }
 
     /**
+     * 実装ファイルの絶対クラス名を渡す
+     *
      * @return string[]
      */
-    public function grepUsingFilenames(string $absoluteClassName): array
+    public function grepDependedClassFilenames(string $absoluteClassName): array
     {
         $exploded = explode('\\', $absoluteClassName);
         $className = $exploded[count($exploded) -1];
