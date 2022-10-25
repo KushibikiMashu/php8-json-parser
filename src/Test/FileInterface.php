@@ -7,4 +7,6 @@ namespace Panda\ToyJsonParser\Test;
 interface FileInterface
 {
     public function isTestFile(): bool;
+
+    public function isPhpFile(): bool;
 }

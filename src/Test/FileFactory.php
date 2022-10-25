@@ -8,6 +8,10 @@ final class FileFactory
 {
     public function create(string $filename): FileInterface
     {
+        if (!str_contains($filename, '.php')) {
+            return new OtherFile($filename);
+        }
+
         preg_match('/\/.+Test\.php/u', $filename, $matches);
         return count($matches) > 0 ? new TestClassFile($filename) : new ClassFile($filename);
     }

@@ -4,14 +4,14 @@ namespace Panda\ToyJsonParser\Test;
 
 trait ClassFileTrait
 {
-    public function isPhpFile(): bool
-    {
-        return str_contains($this->filename, '.php');
-    }
-
     public function equals(FileInterface $that): bool
     {
         return $this->filename === $that->getFilename();
+    }
+
+    public function isPhpFile(): bool
+    {
+        return str_contains($this->filename, '.php');
     }
 
     public function excludeExtension(): string

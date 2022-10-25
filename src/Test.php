@@ -31,20 +31,15 @@ final class Test
 
         $currentBranch = $this->git->getCurrentBranch();
         $files = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
-        $phpFiles = $finder->filterPhpFile($files);
-
-        if (count($phpFiles) === 0) {
-            return 'No tests.';
-        }
 
         $classMap = [];
-        foreach ($phpFiles as $file) {
-            $filename = $file->getFilename();
-            if (!$finder->exists($file)) {
+        foreach ($files as $file) {
+            if (!$finder->exists($file) || !$file->isPhpFile()) {
                 continue;
             }
 
-            // このクラスのテストを実行すると再帰的に実行されてしまうので、スキップする
+            // このクラスのテストを実行すると再帰的にテストが実行されて終わらないので、スキップする
+            $filename = $file->getFilename();
             if ($filename === 'tests/TestTest.php' || $filename === 'src/Test.php') {
                 continue;
             }
@@ -61,6 +56,10 @@ final class Test
 //            echo "executed: " . $className . PHP_EOL;
 
             $classMap[$className] = 1;
+        }
+
+        if (count($classMap) === 0) {
+            return 'No tests.';
         }
 
         return $this->phpUnit->run(array_keys($classMap));
