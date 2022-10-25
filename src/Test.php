@@ -65,6 +65,9 @@ final class Test
                 continue;
             }
 
+            // TODO: 呼び出しているファイルを探して無限ループにならないように、
+            // 一度調べたファイルは loop をスキップする
+
             if ($file->isTestFile()) {
                 /* @var TestClassFile $file  */
                 $className = $resolver->findTestAbsoluteClassName($file);

@@ -39,6 +39,7 @@ final class Finder
     public function findUsingClasses($file): array
     {
         $className = pathinfo($file->getFilename())['filename'];
+        // TODO: namespace を渡す
         $filenames = $this->git->grepUsingFilenames($className);
 
         return array_map(fn ($filename) => $this->factory->create($filename), $filenames);

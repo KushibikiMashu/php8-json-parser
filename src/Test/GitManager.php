@@ -40,10 +40,19 @@ final class GitManager
     /**
      * @return string[]
      */
-    public function grepUsingFilenames(string $className): array
+    public function grepUsingFilenames(string $absoluteClassName): array
     {
-        exec("git grep -l -e 'use' --and -w -e '$className'", $output);
+        $exploded = explode('\\', $absoluteClassName);
+        $className = $exploded[count($exploded) -1];
+        $addedBackSlashes = str_replace('\\', '\\\\', $absoluteClassName);
 
-        return $output;
+        exec("git grep -l -e 'use' --and -w -e '$className'", $used);
+        exec("git grep -l -e '$className::' --or -e 'new $className'", $called);
+        exec("git grep -l -e '$addedBackSlashes'", $maybeCalled);
+
+        $sorted = [...$used, ...$called, ...$maybeCalled];
+        sort($sorted);
+
+        return array_unique($sorted);
     }
 }

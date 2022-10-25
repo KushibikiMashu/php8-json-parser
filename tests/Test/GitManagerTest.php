@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Panda\ToyJsonParser\Test\Test;
 
-use Panda\ToyJsonParser\Test\ClassFile;
 use Panda\ToyJsonParser\Test\GitManager;
-use Panda\ToyJsonParser\Test\TestClassFile;
 
 final class GitManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -32,7 +30,16 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function 実装ファイル名を渡すと、そのクラスが使われているファイル名を配列で返す()
     {
-        $actual = $this->git->grepUsingFilenames('ClassNameResolver');
-        $this->assertEquals(['src/Test.php', 'tests/Test/ClassNameResolverTest.php'], $actual);
+        $actual = $this->git->grepUsingFilenames('Panda\ToyJsonParser\Parser\ValueParser');
+
+        // TODO: テストのこの上の行に引っかかるので $actual から除外する
+        $actual = array_filter($actual, fn ($filename) => $filename !== 'tests/Test/GitManagerTest.php');
+
+        $this->assertEquals([
+            'src/Parser/ArrayParser.php',
+            'src/Parser/ObjectParser.php',
+            'src/Parser/Parser.php',
+            'tests/Parser/ValueParserTest.php',
+        ], $actual);
     }
 }
