@@ -24,9 +24,4 @@ final class TestClassFile implements FileInterface
     {
         return true;
     }
-
-    public function retrieveClassName(): string
-    {
-        return pathinfo($this->filename)['filename'];
-    }
 }

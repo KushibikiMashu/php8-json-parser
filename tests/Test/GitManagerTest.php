@@ -30,10 +30,7 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function 絶対クラス名を渡すと、そのクラスが使われているファイル名を配列で返す()
     {
-        $actual = $this->git->grepDependedClassFilenames('Panda\ToyJsonParser\Parser\ValueParser');
-        // FIXME: テストのこの上の行に引っかかるので $actual から除外する
-        $actual = array_filter($actual, fn ($filename) => $filename !== 'tests/Test/GitManagerTest.php');
-
+        $actual = $this->git->grepDependedClassFilenames('Panda\ToyJsonParser\Parser\Parser');
         $this->assertEquals([
             'src/Parser/ArrayParser.php',
             'src/Parser/ObjectParser.php',
@@ -42,3 +39,4 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
         ], $actual);
     }
 }
+

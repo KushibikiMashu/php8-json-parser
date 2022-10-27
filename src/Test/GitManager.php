@@ -44,16 +44,24 @@ final class GitManager
      */
     public function grepDependedClassFilenames(string $absoluteClassName): array
     {
+        var_dump('grep | ' . $absoluteClassName);
+
         $exploded = explode('\\', $absoluteClassName);
         $className = $exploded[count($exploded) -1];
-        $addedBackSlashes = str_replace('\\', '\\\\', $absoluteClassName);
+        // FIXME: 絶対クラス名での検索は文字列がひっかかってしまう。いい対策が思いつくまでコメントアウトする
+//        $addedBackSlashes = str_replace('\\', '\\\\', $absoluteClassName);
 
-        exec("git grep -l -e 'use' --and -w -e '$className'", $used);
-        exec("git grep -l -e '$className::' --or -e 'new $className'", $called);
-        exec("git grep -l -e '$addedBackSlashes'", $maybeCalled);
+        exec("git grep -l -e 'use' --and -w -e '$className;'", $used);
+        // FIXME: Parser が xxxParser に引っかかる問題に対して半角スペースを追加することで対策をおこなっている
+        // ただし、行頭の場合に対応できないので、根本的に解決を行う必要がある
+        exec("git grep -l -e ' $className::' --or -e 'new $className('", $called);
+//        exec("git grep -l -e '$addedBackSlashes'", $maybeCalled);
 
-        $sorted = [...$used, ...$called, ...$maybeCalled];
+//        $sorted = [...$used, ...$called, ...$maybeCalled];
+        $sorted = [...$used, ...$called];
         sort($sorted);
+
+        var_dump('resu | ' . implode(', ', array_unique($sorted)));
 
         return array_unique($sorted);
     }
