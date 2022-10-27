@@ -43,10 +43,26 @@ final class TestTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function PHPファイルが変更されていない場合、空配列を返す()
+    public function PHP以外のファイルが渡された場合、空配列を返す()
     {
         $files = [new OtherFile('composer.json')];
-        $actual = $this->test->createAbsoluteClassNameList($files);
+        $actual = $this->test->filter($files);
         $this->assertSame([], $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function PHP以外のファイルが渡された場合、そのまま返す()
+    {
+        $files = [
+            new ClassFile('src/Parser/ValueParser.php'),
+            new TestClassFile('tests/Parser/ObjectParserTest.php'),
+        ];
+        $actual = $this->test->filter($files);
+        $this->assertEquals([
+            new ClassFile('src/Parser/ValueParser.php'),
+            new TestClassFile('tests/Parser/ObjectParserTest.php'),
+        ], $actual);
     }
 }

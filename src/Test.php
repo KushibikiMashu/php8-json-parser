@@ -32,8 +32,8 @@ final class Test
         $currentBranch = $this->git->getCurrentBranch();
         $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
         $files = array_map(fn ($filename) => (new FileFactory())->create($filename), $filenames);
-
-        $classList = $this->createAbsoluteClassNameList($files);
+        $filteredFiles = $this->filter($files);
+        $classList = $this->createAbsoluteClassNameList($filteredFiles);
 
         if (count($classList) === 0) {
             return 'No tests.';
@@ -44,6 +44,30 @@ final class Test
 
     /**
      * @param FileInterface[] $files
+     * @return (ClassFile|TestClassFile)[] $files
+     */
+    public function filter(array $files): array
+    {
+        $finder = new Finder();
+        $thisFile = 'src/Test.php';
+        $thisTestFile = 'tests/TestTest.php';
+
+        return array_filter($files, function ($file) use ($finder, $thisFile, $thisTestFile) {
+            if (!$finder->exists($file) || !$file->isPhpFile()) {
+                return false;
+            }
+
+            // このクラスのテストを実行すると再帰的にテストが実行されて終わらないので、スキップする
+            $filename = $file->getFilename();
+            if ($filename === $thisFile || $filename === $thisTestFile) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    /**
+     * @param (ClassFile|TestClassFile)[] $files
      * @return string[]
      */
     // TODO: ClassList か、他の名前のクラスに処理を切り出す
@@ -55,16 +79,6 @@ final class Test
 
         $classList = [];
         foreach ($files as $file) {
-            if (!$finder->exists($file) || !$file->isPhpFile()) {
-                continue;
-            }
-
-            // このクラスのテストを実行すると再帰的にテストが実行されて終わらないので、スキップする
-            $filename = $file->getFilename();
-            if ($filename === 'tests/TestTest.php' || $filename === 'src/Test.php') {
-                continue;
-            }
-
             if ($file->isTestFile()) {
                 /* @var TestClassFile $file */
                 $absoluteTestClassName = $resolver->resolveAbsoluteClassName($file);
