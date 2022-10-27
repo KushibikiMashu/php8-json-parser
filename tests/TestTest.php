@@ -50,9 +50,26 @@ final class TestTest extends \PHPUnit\Framework\TestCase
             new TestClassFile('tests/Parser/ObjectParserTest.php'),
             new OtherFile('composer.json'),
         ];
-        $actual = $this->test->filterTestFiles($files);
+        $actual = $this->test->filterPhpFiles($files);
         $this->assertEquals([
+            new ClassFile('src/Parser/ValueParser.php'),
             new TestClassFile('tests/Parser/ObjectParserTest.php'),
+        ], $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function 実装ファイルとテストファイルの配列が渡されたとき、ファイルを分けて返す()
+    {
+        $files = [
+            new ClassFile('src/Parser/ValueParser.php'),
+            new TestClassFile('tests/Parser/ObjectParserTest.php'),
+        ];
+        $actual = $this->test->separateFiles($files);
+        $this->assertEquals([
+            [new ClassFile('src/Parser/ValueParser.php')],
+            [new TestClassFile('tests/Parser/ObjectParserTest.php')],
         ], $actual);
     }
 }

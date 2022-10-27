@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Panda\ToyJsonParser\Test\Test;
 
-use Panda\ToyJsonParser\Test;
 use Panda\ToyJsonParser\Test\Finder;
 use Panda\ToyJsonParser\Test\ClassFile;
 use Panda\ToyJsonParser\Test\TestClassFile;

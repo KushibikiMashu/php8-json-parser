@@ -32,9 +32,14 @@ final class Test
         $currentBranch = $this->git->getCurrentBranch();
         $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
         $files = array_map(fn ($filename) => (new FileFactory())->create($filename), $filenames);
-        var_dump($files);
-        $filteredFiles = $this->filterTestFiles($files);
-        $classList = $this->createAbsoluteClassNameList($filteredFiles);
+        $phpFiles = $this->filterPhpFiles($files);
+        [$classFiles, $testFiles] = $this->separateFiles($phpFiles);
+        // TODO: 一つずつ作る
+//        $AllDependedFiles = $this->getDependentFiles($classFiles);
+//        $dependedTestFiles = $this->filterTestFile($AllDependedFiles);
+//        $allTestFiles = $this->concatTestFiles($testFiles, $dependedTestFiles);
+//        $classList = $this->createAbsoluteClassNameList($allTestFiles);
+        $classList = $this->createAbsoluteClassNameList($classFiles);
 
         if (count($classList) === 0) {
             return 'No tests.';
@@ -44,10 +49,30 @@ final class Test
     }
 
     /**
-     * @param FileInterface[] $files
-     * @return TestClassFile[] $files
+     * @param (ClassFile|TestClassFile)[] $files
+     * @return array{0: ClassFile[], 1: TestClassFile[] }
      */
-    public function filterTestFiles(array $files): array
+    public function separateFiles(array $files): array
+    {
+        $classFiles = [];
+        $testFiles = [];
+
+        foreach ($files as $file) {
+            if ($file->isTestFile()) {
+                $testFiles[] = $file;
+            } else {
+                $classFiles[] = $file;
+            }
+        }
+
+        return [$classFiles, $testFiles];
+    }
+
+    /**
+     * @param FileInterface[] $files
+     * @return (ClassFile|TestClassFile)[] $files
+     */
+    public function filterPhpFiles(array $files): array
     {
         $finder = new Finder();
         $thisFile = 'src/Test.php';
@@ -64,7 +89,7 @@ final class Test
                 return false;
             }
 
-            return $file->isTestFile();
+            return true;
         });
         // array_filter では key が固定されたままなので、配列を作り直すことで key をリセットする
         return [...$filtered];

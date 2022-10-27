@@ -52,6 +52,17 @@ final class Finder
     }
 
     /**
+     * findAllDependedFiles のラッパー
+     *
+     * @param ClassFile[] $files
+     * @return (ClassFile|TestClassFile)[]
+     */
+    public function findAllDependedFilesByFiles(array $files): array
+    {
+        // TODO: implements
+    }
+
+    /**
      * 直接的・間接的に依存されているファイルを返す
      *
      * @param ClassFile $file
