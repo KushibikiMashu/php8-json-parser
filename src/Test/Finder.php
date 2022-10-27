@@ -44,8 +44,9 @@ final class Finder
      *
      * @return (ClassFile|TestClassFile)[]
      */
-    public function findDependedFiles(string $absoluteClassName): array
+    public function findDependedFiles(ClassFile $file): array
     {
+        $absoluteClassName = $this->resolver->resolveAbsoluteClassName($file);
         $filenames = $this->git->grepDependedClassFilenames($absoluteClassName);
         return array_map(fn ($filename) => $this->factory->create($filename), $filenames);
     }
@@ -70,8 +71,7 @@ final class Finder
 
     private function findRecursivelyDependedFile(ClassFile $file): array
     {
-        $absoluteClassName = $this->resolver->resolveAbsoluteClassName($file);
-        $files = $this->findDependedFiles($absoluteClassName);
+        $files = $this->findDependedFiles($file);
         if (count($files) === 0) {
             return [];
         }
