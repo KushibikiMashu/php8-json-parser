@@ -32,7 +32,8 @@ final class Test
         $currentBranch = $this->git->getCurrentBranch();
         $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
         $files = array_map(fn ($filename) => (new FileFactory())->create($filename), $filenames);
-        $filteredFiles = $this->filter($files);
+        var_dump($files);
+        $filteredFiles = $this->filterTestFiles($files);
         $classList = $this->createAbsoluteClassNameList($filteredFiles);
 
         if (count($classList) === 0) {
@@ -44,15 +45,15 @@ final class Test
 
     /**
      * @param FileInterface[] $files
-     * @return (ClassFile|TestClassFile)[] $files
+     * @return TestClassFile[] $files
      */
-    public function filter(array $files): array
+    public function filterTestFiles(array $files): array
     {
         $finder = new Finder();
         $thisFile = 'src/Test.php';
         $thisTestFile = 'tests/TestTest.php';
 
-        return array_filter($files, function ($file) use ($finder, $thisFile, $thisTestFile) {
+        $filtered = array_filter($files, function ($file) use ($finder, $thisFile, $thisTestFile) {
             if (!$finder->exists($file) || !$file->isPhpFile()) {
                 return false;
             }
@@ -62,12 +63,15 @@ final class Test
             if ($filename === $thisFile || $filename === $thisTestFile) {
                 return false;
             }
-            return true;
+
+            return $file->isTestFile();
         });
+        // array_filter では key が固定されたままなので、配列を作り直すことで key をリセットする
+        return [...$filtered];
     }
 
     /**
-     * @param (ClassFile|TestClassFile)[] $files
+     * @param TestClassFile[] $files
      * @return string[]
      */
     // TODO: ClassList か、他の名前のクラスに処理を切り出す
