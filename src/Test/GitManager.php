@@ -34,7 +34,7 @@ final class GitManager
             $files[$line] = 1;
         }
 
-        return array_keys($files);
+        return array_unique(array_keys($files));
     }
 
     /**

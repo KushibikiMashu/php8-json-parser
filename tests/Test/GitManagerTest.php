@@ -18,7 +18,7 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function 複数コミットから複数ファイルを取得する()
+    public function 複数のコミットからそれぞれで変更があったファイルを配列で取得する()
     {
         $actual = $this->git->getAllChangedFiles('unit-test', 'main', 'd3fb679');
 
@@ -30,7 +30,7 @@ final class GitManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function 絶対クラス名を渡すと、そのクラスが使われているファイル名を配列で返す()
     {
-        $actual = $this->git->grepDependedClassFilenames('Panda\ToyJsonParser\Parser\Parser');
+        $actual = $this->git->grepDependedClassFilenames('Panda\ToyJsonParser\Parser\ValueParser');
         $this->assertEquals([
             'src/Parser/ArrayParser.php',
             'src/Parser/ObjectParser.php',
