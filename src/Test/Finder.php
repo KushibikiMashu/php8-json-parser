@@ -44,7 +44,7 @@ final class Finder
      *
      * @return (ClassFile|TestClassFile)[]
      */
-    public function findDependedFiles(ClassFile $file): array
+    public function findDirectlyDependedFiles(ClassFile $file): array
     {
         $absoluteClassName = $this->resolver->resolveAbsoluteClassName($file);
         $filenames = $this->git->grepDependedClassFilenames($absoluteClassName);
@@ -57,9 +57,9 @@ final class Finder
      * @param ClassFile[] $files
      * @return (ClassFile|TestClassFile)[]
      */
-    public function findAllDependedFilesByFiles(array $files): array
+    public function findAllDependedFiles(array $files): array
     {
-        // TODO: implements
+//         TODO: implements
     }
 
     /**
@@ -68,7 +68,7 @@ final class Finder
      * @param ClassFile $file
      * @return (ClassFile|TestClassFile)[]
      */
-    public function findAllDependedFiles(ClassFile $file): array
+    public function findDependedFiles(ClassFile $file): array
     {
         $this->dependentFiles[$file->getFilename()] = 1;
 
@@ -82,7 +82,7 @@ final class Finder
 
     private function findRecursivelyDependedFile(ClassFile $file): array
     {
-        $files = $this->findDependedFiles($file);
+        $files = $this->findDirectlyDependedFiles($file);
         if (count($files) === 0) {
             return [];
         }

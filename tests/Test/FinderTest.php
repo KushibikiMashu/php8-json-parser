@@ -31,7 +31,7 @@ final class FinderTest extends \PHPUnit\Framework\TestCase
      */
     public function 絶対クラス名を渡したら、直接そのクラスを使っているのクラスのファイルを配列で返す()
     {
-        $actual = $this->finder->findDependedFiles(new ClassFile('src/Parser/ValueParser.php'));
+        $actual = $this->finder->findDirectlyDependedFiles(new ClassFile('src/Parser/ValueParser.php'));
         $this->assertEquals([
             new ClassFile('src/Parser/ArrayParser.php'),
             new ClassFile('src/Parser/ObjectParser.php'),
@@ -46,7 +46,7 @@ final class FinderTest extends \PHPUnit\Framework\TestCase
      */
     public function ファイル名を渡したら、直接的・間接的にそのクラスを使っている全てのクラスのファイルを配列で返す()
     {
-        $actual = $this->finder->findAllDependedFiles(new ClassFile('src/Parser/ValueParser.php'));
+        $actual = $this->finder->findDependedFiles(new ClassFile('src/Parser/ValueParser.php'));
         $this->assertEquals([
             new ClassFile('src/JsonParser.php'),
             new ClassFile('src/Parser/ArrayParser.php'),
