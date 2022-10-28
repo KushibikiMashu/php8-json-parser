@@ -28,6 +28,7 @@ final class Test
     public function main(string $toHash = null): string
     {
         $mainBranch = new Branch('main');
+        $finder = new Finder();
 
         $currentBranch = $this->git->getCurrentBranch();
         $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
@@ -35,9 +36,9 @@ final class Test
         $phpFiles = $this->filterPhpFiles($files);
         [$classFiles, $testFiles] = $this->separateFiles($phpFiles);
         // TODO: 一つずつ作る
-//        $AllDependedFiles = $this->getDependentFiles($classFiles);
-//        $dependedTestFiles = $this->filterTestFile($AllDependedFiles);
-//        $allTestFiles = $this->concatTestFiles($testFiles, $dependedTestFiles);
+        $AllDependedFiles = $finder->findAllDependedFiles($classFiles);
+        $dependedTestFiles = $this->filterTestFiles($AllDependedFiles);
+        $allTestFiles = $this->concatFiles($testFiles, $dependedTestFiles);
 //        $classList = $this->createAbsoluteClassNameList($allTestFiles);
         $classList = $this->createAbsoluteClassNameList($classFiles);
 
@@ -93,6 +94,26 @@ final class Test
         });
         // array_filter では key が固定されたままなので、配列を作り直すことで key をリセットする
         return [...$filtered];
+    }
+
+    /**
+     * @param FileInterface[] $files
+     * @return (ClassFile|TestClassFile)[] $files
+     */
+    public function filterTestFiles(array $files): array
+    {
+        $finder = new Finder();
+        $filtered = array_filter($files, function ($file) use ($finder) {
+            return $finder->exists($file) && $file->isTestFile();
+        });
+        // array_filter では key が固定されたままなので、配列を作り直すことで key をリセットする
+        return [...$filtered];
+    }
+
+    public function concatFiles(array $filesA, array $filesB): array
+    {
+        $diffs = array_diff($filesB, $filesA);
+        return [...$filesA, ...$diffs];
     }
 
     /**

@@ -31,4 +31,9 @@ trait ClassFileTrait
     {
         return str_replace($this->rootDir(), '', $this->excludeExtension());
     }
+
+    public function __toString(): string
+    {
+        return $this->filename;
+    }
 }
