@@ -52,17 +52,6 @@ final class Finder
     }
 
     /**
-     * findAllDependedFiles のラッパー
-     *
-     * @param ClassFile[] $files
-     * @return (ClassFile|TestClassFile)[]
-     */
-    public function findAllDependedFiles(array $files): array
-    {
-//         TODO: implements
-    }
-
-    /**
      * 直接的・間接的に依存されているファイルを返す
      *
      * @param ClassFile $file
@@ -70,18 +59,42 @@ final class Finder
      */
     public function findDependedFiles(ClassFile $file): array
     {
+        $unique = array_unique($this->findRecursivelyDependedFile($file));
+        sort($unique);
+        return array_map(fn ($filename) => $this->factory->create($filename), $unique);
+    }
+
+    /**
+     * findAllDependedFiles のラッパー
+     *
+     * @param ClassFile[] $files
+     * @return (ClassFile|TestClassFile)[]
+     */
+    public function findAllDependedFiles(array $files): array
+    {
+        $filePaths = [];
+        foreach ($files as $file) {
+            $filePaths[] = $this->findRecursivelyDependedFile($file);
+        }
+        $flattened = $this->flatten($filePaths);
+        $unique = array_unique($flattened);
+        sort($unique);
+        return array_map(fn ($filename) => $this->factory->create($filename), $unique);
+    }
+
+    private function flatten(array $array): array
+    {
+        array_walk_recursive($array, function($v) use (&$result){ $result[] = $v; });
+        return $result;
+    }
+
+    private function findRecursivelyDependedFile(ClassFile $file): array
+    {
         $this->dependentFiles[$file->getFilename()] = 1;
 
         var_dump('');
         var_dump('------- rec start');
 
-        $unique = array_unique($this->findRecursivelyDependedFile($file));
-        sort($unique);
-        return array_map(fn ($filename) => $this->factory->create($filename), $unique);;
-    }
-
-    private function findRecursivelyDependedFile(ClassFile $file): array
-    {
         $files = $this->findDirectlyDependedFiles($file);
         if (count($files) === 0) {
             return [];

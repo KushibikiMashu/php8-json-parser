@@ -59,4 +59,26 @@ final class FinderTest extends \PHPUnit\Framework\TestCase
             new TestClassFile('tests/Parser/ValueParserTest.php'),
         ], $actual);
     }
+
+    /**
+     * @test
+     */
+    public function 複数のファイル名を渡したら、直接的・間接的にそのクラスを使っている全てのクラスのファイルを配列で返す()
+    {
+        $actual = $this->finder->findAllDependedFiles([
+            new ClassFile('src/Parser/ValueParser.php'),
+            new ClassFile('src/JsonParser.php'),
+        ]);
+        $this->assertEquals([
+            new ClassFile('src/JsonParser.php'),
+            new ClassFile('src/Parser/ArrayParser.php'),
+            new ClassFile('src/Parser/ObjectParser.php'),
+            new ClassFile('src/Parser/Parser.php'),
+            new ClassFile('src/Parser/ValueParser.php'),
+            new TestClassFile('tests/JsonParserTest.php'),
+            new TestClassFile('tests/Parser/ArrayParserTest.php'),
+            new TestClassFile('tests/Parser/ObjectParserTest.php'),
+            new TestClassFile('tests/Parser/ValueParserTest.php'),
+        ], $actual);
+    }
 }
