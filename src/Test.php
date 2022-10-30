@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Panda\ToyJsonParser;
 
 use Panda\ToyJsonParser\Test\Branch;
-use Panda\ToyJsonParser\Test\ClassFile;
 use Panda\ToyJsonParser\Test\ClassNameResolver;
+use Panda\ToyJsonParser\Test\FileArrayUtils;
 use Panda\ToyJsonParser\Test\FileFactory;
-use Panda\ToyJsonParser\Test\FileInterface;
 use Panda\ToyJsonParser\Test\Finder;
 use Panda\ToyJsonParser\Test\GitManager;
 use Panda\ToyJsonParser\Test\PHPUnitManager;
@@ -29,15 +28,16 @@ final class Test
     {
         $mainBranch = new Branch('main');
         $finder = new Finder();
+        $utils = new FileArrayUtils();
 
         $currentBranch = $this->git->getCurrentBranch();
         $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
         $files = array_map(fn ($filename) => (new FileFactory())->create($filename), $filenames);
-        $phpFiles = $this->filterPhpFiles($files);
-        [$classFiles, $testFiles] = $this->separateFiles($phpFiles);
+        $phpFiles = $utils->filterPhpFiles($files);
+        [$classFiles, $testFiles] = $utils->separateFiles($phpFiles);
         $AllDependedFiles = $finder->findAllDependedFiles($classFiles);
-        $dependedTestFiles = $this->filterTestFiles($AllDependedFiles);
-        $allTestFiles = $this->concatFiles($testFiles, $dependedTestFiles);
+        $dependedTestFiles = $utils->filterTestFiles($AllDependedFiles);
+        $allTestFiles = $utils->concatFiles($testFiles, $dependedTestFiles);
         $classList = $this->createAbsoluteClassNameList($allTestFiles);
 
         if (count($classList) === 0) {
@@ -45,73 +45,6 @@ final class Test
         }
 
         return $this->phpUnit->run($classList);
-    }
-
-    /**
-     * @param (ClassFile|TestClassFile)[] $files
-     * @return array{0: ClassFile[], 1: TestClassFile[] }
-     */
-    public function separateFiles(array $files): array
-    {
-        $classFiles = [];
-        $testFiles = [];
-
-        foreach ($files as $file) {
-            if ($file->isTestFile()) {
-                $testFiles[] = $file;
-            } else {
-                $classFiles[] = $file;
-            }
-        }
-
-        return [$classFiles, $testFiles];
-    }
-
-    /**
-     * @param FileInterface[] $files
-     * @return (ClassFile|TestClassFile)[] $files
-     */
-    public function filterPhpFiles(array $files): array
-    {
-        $finder = new Finder();
-        $thisFile = 'src/Test.php';
-        $thisTestFile = 'tests/TestTest.php';
-
-        $filtered = array_filter($files, function ($file) use ($finder, $thisFile, $thisTestFile) {
-            if (!$finder->exists($file) || !$file->isPhpFile()) {
-                return false;
-            }
-
-            // このクラスのテストを実行すると再帰的にテストが実行されて終わらないので、スキップする
-            $filename = $file->getFilename();
-            if ($filename === $thisFile || $filename === $thisTestFile) {
-                return false;
-            }
-
-            return true;
-        });
-        // array_filter では key が固定されたままなので、配列を作り直すことで key をリセットする
-        return [...$filtered];
-    }
-
-    /**
-     * @param FileInterface[] $files
-     * @return (ClassFile|TestClassFile)[] $files
-     */
-    public function filterTestFiles(array $files): array
-    {
-        $finder = new Finder();
-        $filtered = array_filter($files, function ($file) use ($finder) {
-            return $finder->exists($file) && $file->isTestFile();
-        });
-        // array_filter では key が固定されたままなので、配列を作り直すことで key をリセットする
-        return [...$filtered];
-    }
-
-    public function concatFiles(array $filesA, array $filesB): array
-    {
-        $diffs = array_diff($filesB, $filesA);
-        return [...$filesA, ...$diffs];
     }
 
     /**
