@@ -11,7 +11,6 @@ use Panda\ToyJsonParser\Test\FileFactory;
 use Panda\ToyJsonParser\Test\Finder;
 use Panda\ToyJsonParser\Test\GitManager;
 use Panda\ToyJsonParser\Test\PHPUnitManager;
-use Panda\ToyJsonParser\Test\TestClassFile;
 
 final class Test
 {
@@ -29,6 +28,7 @@ final class Test
         $mainBranch = new Branch('main');
         $finder = new Finder();
         $utils = new FileArrayUtils();
+        $resolver = new ClassNameResolver();
 
         $currentBranch = $this->git->getCurrentBranch();
         $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
@@ -38,35 +38,13 @@ final class Test
         $AllDependedFiles = $finder->findAllDependedFiles($classFiles);
         $dependedTestFiles = $utils->filterTestFiles($AllDependedFiles);
         $allTestFiles = $utils->concatFiles($testFiles, $dependedTestFiles);
-        $classList = $this->createAbsoluteClassNameList($allTestFiles);
+        $classList = $resolver->resolveAbsoluteClassNameList($allTestFiles);
 
         if (count($classList) === 0) {
             return 'No tests.';
         }
 
         return $this->phpUnit->run($classList);
-    }
-
-    /**
-     * @param TestClassFile[] $files
-     * @return string[]
-     */
-    // TODO: ClassList か、他の名前のクラスに処理を切り出す
-    public function createAbsoluteClassNameList(array $files): array
-    {
-        // constructor に入れる
-        $resolver = new ClassNameResolver();
-
-        $classList = [];
-        foreach ($files as $file) {
-            $absoluteTestClassName = $resolver->resolveAbsoluteClassName($file);
-
-//            echo "executed: " . $absoluteClassName . PHP_EOL;
-
-            $classList[$absoluteTestClassName] = 1;
-        }
-
-        return array_keys($classList);
     }
 }
 

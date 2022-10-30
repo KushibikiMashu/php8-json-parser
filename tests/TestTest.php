@@ -23,20 +23,4 @@ final class TestTest extends \PHPUnit\Framework\TestCase
         $actual = $this->test->main('2e7195f');
         $this->assertMatchesRegularExpression('/8 tests/', $actual);
     }
-
-    /**
-     * @test
-     */
-    public function ファイルを渡すと、そのテストクラスの絶対クラス名を配列で取得する()
-    {
-        $files = [
-            new ClassFile('src/Parser/ValueParser.php'),
-            new TestClassFile('tests/Parser/ObjectParserTest.php'),
-        ];
-        $actual = $this->test->createAbsoluteClassNameList($files);
-        $this->assertSame([
-            'Panda\ToyJsonParser\Parser\ValueParser',
-            'Panda\ToyJsonParser\Test\Parser\ObjectParserTest',
-        ], $actual);
-    }
 }

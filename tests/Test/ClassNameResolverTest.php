@@ -39,4 +39,20 @@ final class ClassNameResolverTest extends \PHPUnit\Framework\TestCase
         $actual = $this->resolver->resolveAbsoluteClassName(new TestClassFile('tests/Parser/ObjectParserTest.php'));
         $this->assertSame('Panda\ToyJsonParser\Test\Parser\ObjectParserTest', $actual);
     }
+
+    /**
+     * @test
+     */
+    public function ファイルを渡すと、そのテストクラスの絶対クラス名を配列で取得する()
+    {
+        $files = [
+            new ClassFile('src/Parser/ValueParser.php'),
+            new TestClassFile('tests/Parser/ObjectParserTest.php'),
+        ];
+        $actual = $this->resolver->resolveAbsoluteClassNameList($files);
+        $this->assertSame([
+            'Panda\ToyJsonParser\Parser\ValueParser',
+            'Panda\ToyJsonParser\Test\Parser\ObjectParserTest',
+        ], $actual);
+    }
 }

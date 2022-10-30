@@ -25,6 +25,7 @@ final class ClassNameResolver
 
     /**
      * @param ClassFile|TestClassFile $file
+     * @return string 引数のファイルのクラスの絶対クラス名
      */
     public function resolveAbsoluteClassName($file): string
     {
@@ -36,5 +37,21 @@ final class ClassNameResolver
         $replaced = str_replace('/', '\\', $file->filenameWithoutRootDir());
 
         return $this->classMap[$rootDir] . $replaced;
+    }
+
+    /**
+     * @param TestClassFile[] $files
+     * @return string[] 引数のファイルのクラスの絶対クラス名の配列
+     */
+    public function resolveAbsoluteClassNameList(array $files): array
+    {
+        $list = [];
+        foreach ($files as $file) {
+            $absoluteTestClassName = $this->resolveAbsoluteClassName($file);
+            // 重複を排除する
+            $list[$absoluteTestClassName] = 1;
+        }
+
+        return array_keys($list);
     }
 }
