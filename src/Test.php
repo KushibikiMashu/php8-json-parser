@@ -16,11 +16,13 @@ final class Test
 {
     private GitManager $git;
     private PHPUnitManager $phpUnit;
+    private FileFactory $factory;
 
     public function __construct()
     {
         $this->git = new GitManager();
         $this->phpUnit = new PHPUnitManager();
+        $this->factory = new FileFactory();
     }
 
     public function main(string $toHash = null): string
@@ -32,7 +34,7 @@ final class Test
 
         $currentBranch = $this->git->getCurrentBranch();
         $filenames = $this->git->getAllChangedFiles($currentBranch->getName(), $mainBranch->getName(), $toHash);
-        $files = array_map(fn ($filename) => (new FileFactory())->create($filename), $filenames);
+        $files = array_map(fn ($filename) => $this->factory->create($filename), $filenames);
         $phpFiles = $utils->filterPhpFiles($files);
         [$classFiles, $testFiles] = $utils->separateFiles($phpFiles);
         $AllDependedFiles = $finder->findAllDependedFiles($classFiles);
