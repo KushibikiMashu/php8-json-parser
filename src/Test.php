@@ -35,12 +35,10 @@ final class Test
         $files = array_map(fn ($filename) => (new FileFactory())->create($filename), $filenames);
         $phpFiles = $this->filterPhpFiles($files);
         [$classFiles, $testFiles] = $this->separateFiles($phpFiles);
-        // TODO: 一つずつ作る
         $AllDependedFiles = $finder->findAllDependedFiles($classFiles);
         $dependedTestFiles = $this->filterTestFiles($AllDependedFiles);
         $allTestFiles = $this->concatFiles($testFiles, $dependedTestFiles);
-//        $classList = $this->createAbsoluteClassNameList($allTestFiles);
-        $classList = $this->createAbsoluteClassNameList($classFiles);
+        $classList = $this->createAbsoluteClassNameList($allTestFiles);
 
         if (count($classList) === 0) {
             return 'No tests.';
@@ -124,19 +122,11 @@ final class Test
     public function createAbsoluteClassNameList(array $files): array
     {
         // constructor に入れる
-        $finder = new Finder();
         $resolver = new ClassNameResolver();
 
         $classList = [];
         foreach ($files as $file) {
-            if ($file->isTestFile()) {
-                /* @var TestClassFile $file */
-                $absoluteTestClassName = $resolver->resolveAbsoluteClassName($file);
-            } else {
-                /* @var ClassFile $file */
-                $testFile = $finder->findTestFileByClassFile($file);
-                $absoluteTestClassName = $resolver->resolveAbsoluteClassName($testFile);
-            }
+            $absoluteTestClassName = $resolver->resolveAbsoluteClassName($file);
 
 //            echo "executed: " . $absoluteClassName . PHP_EOL;
 
